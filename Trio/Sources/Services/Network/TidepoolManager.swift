@@ -633,14 +633,17 @@ extension BaseTidepoolManager {
 
         processQueue.async {
             for chunk in chunks {
+                let chunkSamples = Array(chunk)
                 tidepoolService.uploadGlucoseData(chunk) { result in
                     switch result {
                     case .success:
                         debug(.nightscout, "Success synchronizing glucose data")
 
-                        // After successful upload, update the isUploadedToTidepool flag in Core Data
+                        // After successful upload, mark only the samples in THIS
+                        // chunk as uploaded. Marking the full set here would also
+                        // mark samples from chunks that may have failed.
                         Task {
-                            await self.updateGlucoseAsUploaded(glucose)
+                            await self.updateGlucoseAsUploaded(chunkSamples)
                         }
                     case let .failure(error):
                         debug(.nightscout, "Error synchronizing glucose data: \(String(describing: error))")
@@ -652,7 +655,12 @@ extension BaseTidepoolManager {
 
     private func updateGlucoseAsUploaded(_ glucose: [StoredGlucoseSample]) async {
         await backgroundContext.perform {
-            let ids = glucose.map(\.syncIdentifier) as NSArray
+            // GlucoseStored.id is a UUID, but the sync identifiers carried on the
+            // StoredGlucoseSample are the String form of that UUID. Comparing the
+            // UUID attribute against String values never matches, so the records
+            // were never marked uploaded and kept getting re-queued. Convert back
+            // to UUID (dropping any that don't parse) so the predicate matches.
+            let ids = glucose.compactMap { UUID(uuidString: $0.syncIdentifier) } as NSArray
             let fetchRequest: NSFetchRequest<GlucoseStored> = GlucoseStored.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "id IN %@", ids)
 
