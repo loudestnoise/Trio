@@ -4,6 +4,8 @@ import AccuChekKit
 import CGMBLEKit
 import CGMBLEKitUI
 import DanaKit
+import DexKit
+import DexKitUI
 import EversenseKit
 import Foundation
 import G7SensorKit
@@ -238,10 +240,12 @@ struct CGMCatalogEntry: DeviceCatalogEntry {
     let source: Source
     let manufacturer: DeviceManufacturer
     private let rawName: String?
+    /// Set when the advertised identifier cannot come from the manager type.
+    private let idOverride: String?
     let supportedModels: [String]
     let icon: DeviceIcon
 
-    var id: String { source.id }
+    var id: String { idOverride ?? source.id }
     var cgmType: CGMType { source.cgmType }
     var managerType: CGMManagerUI.Type? { source.managerType }
 
@@ -268,13 +272,15 @@ struct CGMCatalogEntry: DeviceCatalogEntry {
         manufacturer: DeviceManufacturer,
         name: String? = nil,
         supportedModels: [String] = [],
-        icon: DeviceIcon = .none
+        icon: DeviceIcon = .none,
+        id: String? = nil
     ) {
         self.source = source
         self.manufacturer = manufacturer
         rawName = name
         self.supportedModels = supportedModels
         self.icon = icon
+        idOverride = id
     }
 }
 
@@ -361,17 +367,36 @@ extension DeviceCatalog {
         // just repeat them.
         // No G5 icon: CGMBLEKitUI ships only "g6", and reusing it would picture the wrong hardware.
         CGMCatalogEntry(.managed(G5CGMManager.self), manufacturer: .dexcom, name: "Dexcom G5"),
+        // Module-qualified: DexKit also exports public G6CGMManager/G7CGMManager types.
         CGMCatalogEntry(
-            .managed(G6CGMManager.self),
+            .managed(CGMBLEKit.G6CGMManager.self),
             manufacturer: .dexcom,
             name: "Dexcom G6 / ONE",
             icon: .uiBundle(identifier: "com.loopkit.CGMBLEKitUI", asset: "g6")
         ),
         CGMCatalogEntry(
-            .managed(G7CGMManager.self),
+            .managed(G7SensorKit.G7CGMManager.self),
             manufacturer: .dexcom,
             name: "Dexcom G7 / ONE+",
             icon: .uiBundle(identifier: "org.loopkit.G7SensorKitUI", asset: "g7")
+        ),
+
+        // DexKit talks to the sensor directly. Both picker classes inherit DexcomCGMManager's
+        // `static let pluginIdentifier`, which is not overridable, so the family-specific
+        // identifier has to be spelled out or the two entries would collide on "DexcomCGMManager".
+        CGMCatalogEntry(
+            .managed(DexcomG6CGMManager.self),
+            manufacturer: .dexcom,
+            name: "Dexcom G6 / ONE (direct)",
+            icon: .uiBundle(identifier: "org.nightscout.DexKitUI", asset: "g6"),
+            id: DexcomCGMManager.g6PluginIdentifier
+        ),
+        CGMCatalogEntry(
+            .managed(DexcomG7CGMManager.self),
+            manufacturer: .dexcom,
+            name: "Dexcom G7 / ONE+ / Stelo (direct)",
+            icon: .uiBundle(identifier: "org.nightscout.DexKitUI", asset: "g7"),
+            id: DexcomCGMManager.g7PluginIdentifier
         ),
 
         CGMCatalogEntry(
