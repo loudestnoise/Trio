@@ -240,12 +240,10 @@ struct CGMCatalogEntry: DeviceCatalogEntry {
     let source: Source
     let manufacturer: DeviceManufacturer
     private let rawName: String?
-    /// Set when the advertised identifier cannot come from the manager type.
-    private let idOverride: String?
     let supportedModels: [String]
     let icon: DeviceIcon
 
-    var id: String { idOverride ?? source.id }
+    var id: String { source.id }
     var cgmType: CGMType { source.cgmType }
     var managerType: CGMManagerUI.Type? { source.managerType }
 
@@ -272,15 +270,13 @@ struct CGMCatalogEntry: DeviceCatalogEntry {
         manufacturer: DeviceManufacturer,
         name: String? = nil,
         supportedModels: [String] = [],
-        icon: DeviceIcon = .none,
-        id: String? = nil
+        icon: DeviceIcon = .none
     ) {
         self.source = source
         self.manufacturer = manufacturer
         rawName = name
         self.supportedModels = supportedModels
         self.icon = icon
-        idOverride = id
     }
 }
 
@@ -381,22 +377,18 @@ extension DeviceCatalog {
             icon: .uiBundle(identifier: "org.loopkit.G7SensorKitUI", asset: "g7")
         ),
 
-        // DexKit talks to the sensor directly. Both picker classes inherit DexcomCGMManager's
-        // `static let pluginIdentifier`, which is not overridable, so the family-specific
-        // identifier has to be spelled out or the two entries would collide on "DexcomCGMManager".
+        // DexKit talks to the sensor directly, with no Dexcom app or account.
         CGMCatalogEntry(
             .managed(DexcomG6CGMManager.self),
             manufacturer: .dexcom,
             name: "Dexcom G6 / ONE (direct)",
-            icon: .uiBundle(identifier: "org.nightscout.DexKitUI", asset: "g6"),
-            id: DexcomCGMManager.g6PluginIdentifier
+            icon: .uiBundle(identifier: "org.nightscout.DexKitUI", asset: "g6")
         ),
         CGMCatalogEntry(
             .managed(DexcomG7CGMManager.self),
             manufacturer: .dexcom,
             name: "Dexcom G7 / ONE+ / Stelo (direct)",
-            icon: .uiBundle(identifier: "org.nightscout.DexKitUI", asset: "g7"),
-            id: DexcomCGMManager.g7PluginIdentifier
+            icon: .uiBundle(identifier: "org.nightscout.DexKitUI", asset: "g7")
         ),
 
         CGMCatalogEntry(
