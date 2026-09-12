@@ -1,5 +1,6 @@
 import CGMBLEKit
 import Combine
+import DexKit
 import Foundation
 import G7SensorKit
 import LibreLoop
@@ -270,15 +271,25 @@ extension PluginSource: CGMManagerDelegate {
                 sensorActivatedAt = latestReading?.activationDate
                 sensorStartDate = latestReading?.sessionStartDate
                 sensorTransmitterID = latestReading?.transmitterID
-            } else if let cgmTransmitterManager = cgmManager as? G6CGMManager {
+            } else if let cgmTransmitterManager = cgmManager as? CGMBLEKit.G6CGMManager {
                 let latestReading = cgmTransmitterManager.latestReading
                 sensorActivatedAt = latestReading?.activationDate
                 sensorStartDate = latestReading?.sessionStartDate
                 sensorTransmitterID = latestReading?.transmitterID
-            } else if let cgmTransmitterManager = cgmManager as? G7CGMManager {
+            } else if let cgmTransmitterManager = cgmManager as? G7SensorKit.G7CGMManager {
                 sensorActivatedAt = cgmTransmitterManager.sensorActivatedAt
                 sensorStartDate = cgmTransmitterManager.sensorActivatedAt
                 sensorTransmitterID = cgmTransmitterManager.sensorName
+            } else if let dexcomManager = cgmManager as? DexcomCGMManager {
+                if let g6 = dexcomManager.g6 {
+                    sensorActivatedAt = g6.state.transmitterStartDate
+                    sensorStartDate = g6.state.sensorStartDate
+                    sensorTransmitterID = g6.state.transmitterID
+                } else if let g7 = dexcomManager.g7 {
+                    sensorActivatedAt = g7.state.activatedAt
+                    sensorStartDate = g7.state.activatedAt
+                    sensorTransmitterID = g7.state.sensorID
+                }
             } else if let cgmTransmitterManager = cgmManager as? LibreLoopCGMManager {
                 sensorActivatedAt = cgmTransmitterManager.state.activatedAt
                 sensorStartDate = cgmTransmitterManager.state.activatedAt
