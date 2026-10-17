@@ -138,6 +138,9 @@
 		38A504A425DD9C4000C5B9E8 /* UserDefaultsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A5049125DD9C4000C5B9E8 /* UserDefaultsExtensions.swift */; };
 		38A9260525F012D8009E3739 /* CarbRatios.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A9260425F012D8009E3739 /* CarbRatios.swift */; };
 		38AAF85525FFF846004AF583 /* CurrentGlucoseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AAF85425FFF846004AF583 /* CurrentGlucoseView.swift */; };
+		5CA4E0020000000000000001 /* ShareCardSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA4E0010000000000000001 /* ShareCardSnapshot.swift */; };
+		5CA4E0020000000000000002 /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA4E0010000000000000002 /* ShareCardView.swift */; };
+		5CA4E0020000000000000003 /* ShareCardSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA4E0010000000000000003 /* ShareCardSheet.swift */; };
 		38AEE73D25F0200C0013F05B /* TrioSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AEE73C25F0200C0013F05B /* TrioSettings.swift */; };
 		38AEE75225F022080013F05B /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AEE75125F022080013F05B /* SettingsManager.swift */; };
 		38AEE75725F0F18E0013F05B /* CarbsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AEE75625F0F18E0013F05B /* CarbsStorage.swift */; };
@@ -1351,6 +1354,9 @@
 		38A5049125DD9C4000C5B9E8 /* UserDefaultsExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsExtensions.swift; sourceTree = "<group>"; };
 		38A9260425F012D8009E3739 /* CarbRatios.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbRatios.swift; sourceTree = "<group>"; };
 		38AAF85425FFF846004AF583 /* CurrentGlucoseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentGlucoseView.swift; sourceTree = "<group>"; };
+		5CA4E0010000000000000001 /* ShareCardSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardSnapshot.swift; sourceTree = "<group>"; };
+		5CA4E0010000000000000002 /* ShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardView.swift; sourceTree = "<group>"; };
+		5CA4E0010000000000000003 /* ShareCardSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardSheet.swift; sourceTree = "<group>"; };
 		38AEE73C25F0200C0013F05B /* TrioSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrioSettings.swift; sourceTree = "<group>"; };
 		38AEE75125F022080013F05B /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		38AEE75625F0F18E0013F05B /* CarbsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbsStorage.swift; sourceTree = "<group>"; };
@@ -2750,6 +2756,7 @@
 				7A11AC0DE00000000000000D /* HomeRootView+Header.swift */,
 				3833B51E260264AC003021B3 /* Chart */,
 				3833B51F260264B6003021B3 /* Header */,
+				5CA4E0030000000000000001 /* ShareCard */,
 				FDB1D1005DA54C048E622761 /* QuickPickTreatments */,
 			);
 			path = View;
@@ -3080,6 +3087,16 @@
 				BDDAF9F12D0055CC00B34E7A /* ChartElements */,
 			);
 			path = Chart;
+			sourceTree = "<group>";
+		};
+		5CA4E0030000000000000001 /* ShareCard */ = {
+			isa = PBXGroup;
+			children = (
+				5CA4E0010000000000000001 /* ShareCardSnapshot.swift */,
+				5CA4E0010000000000000002 /* ShareCardView.swift */,
+				5CA4E0010000000000000003 /* ShareCardSheet.swift */,
+			);
+			path = ShareCard;
 			sourceTree = "<group>";
 		};
 		3833B51F260264B6003021B3 /* Header */ = {
@@ -6155,6 +6172,9 @@
 				BDF34F932C10D0E100D51995 /* LiveActivityAttributes+Helper.swift in Sources */,
 				E0D4F80527513ECF00BDF1FE /* HealthKitSample.swift in Sources */,
 				38AAF85525FFF846004AF583 /* CurrentGlucoseView.swift in Sources */,
+				5CA4E0020000000000000001 /* ShareCardSnapshot.swift in Sources */,
+				5CA4E0020000000000000002 /* ShareCardView.swift in Sources */,
+				5CA4E0020000000000000003 /* ShareCardSheet.swift in Sources */,
 				BD11C001000000000000C001 /* CGMSensorDisplayState.swift in Sources */,
 				BD11C001000000000000C003 /* SensorLifecycleArcView.swift in Sources */,
 				BD11C001000000000000C004 /* SensorStatusTagView.swift in Sources */,

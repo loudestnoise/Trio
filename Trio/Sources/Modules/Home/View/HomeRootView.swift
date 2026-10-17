@@ -33,6 +33,7 @@ extension Home {
         @State var pendingPump: PumpCatalogEntry?
         @State var pendingCGM: CGMCatalogEntry?
         @State var showSnoozeSheet: Bool = false
+        @State var shareCardSnapshot: ShareCardSnapshot?
         @State var showManualGlucose: Bool = false
         @State var showReleaseNotes: Bool = false
         @State var alarmsSnoozeUntil: Date = .distantPast
@@ -289,6 +290,9 @@ extension Home {
             }
             .sheet(isPresented: $showSnoozeSheet) {
                 SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
+            }
+            .sheet(item: $shareCardSnapshot) { snapshot in
+                ShareCardSheet(snapshot: snapshot)
             }
             .sheet(isPresented: $showReleaseNotes) {
                 if let notes = releaseNotesService.notes {
