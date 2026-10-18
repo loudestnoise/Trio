@@ -34,6 +34,8 @@ extension Home {
         @State var pendingCGM: CGMCatalogEntry?
         @State var showSnoozeSheet: Bool = false
         @State var shareCardSnapshot: ShareCardSnapshot?
+        /// Captured when "Share" is tapped in the snooze sheet, presented once that sheet has dismissed.
+        @State var pendingShareCardSnapshot: ShareCardSnapshot?
         @State var showManualGlucose: Bool = false
         @State var showReleaseNotes: Bool = false
         @State var alarmsSnoozeUntil: Date = .distantPast
@@ -288,8 +290,18 @@ extension Home {
             .sheet(isPresented: $state.isLegendPresented) {
                 ChartLegendView(state: state)
             }
-            .sheet(isPresented: $showSnoozeSheet) {
-                SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
+            // The share card is presented in `onDismiss`: starting one sheet while another is still
+            // dismissing gets dropped by SwiftUI.
+            .sheet(isPresented: $showSnoozeSheet, onDismiss: {
+                if let snapshot = pendingShareCardSnapshot {
+                    pendingShareCardSnapshot = nil
+                    shareCardSnapshot = snapshot
+                }
+            }) {
+                SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet, onShare: {
+                    pendingShareCardSnapshot = ShareCardSnapshot(state: state)
+                    showSnoozeSheet = false
+                })
             }
             .sheet(item: $shareCardSnapshot) { snapshot in
                 ShareCardSheet(snapshot: snapshot)
