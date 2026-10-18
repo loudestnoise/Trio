@@ -7,6 +7,8 @@ import SwiftUI
 /// (4:5, the portrait ratio social apps expect). It is built only from a `ShareCardSnapshot`.
 struct ShareCardView: View {
     static let size = CGSize(width: 360, height: 450)
+    /// 256 pt native bobble canvas × 0.72 ≈ 184 pt on the card.
+    private static let heroScale: CGFloat = 0.72
 
     let snapshot: ShareCardSnapshot
 
@@ -47,43 +49,29 @@ struct ShareCardView: View {
 
     // MARK: - Glucose
 
+    /// Trio's own contact-image bobble (ring, glucose number, trend triangle orbiting the ring), drawn at
+    /// its native 256 pt canvas and scaled to fit the card.
     private var hero: some View {
-        ZStack {
+        let native = GlucoseBobbleContactView.Layout.nativeSize
+        let ringDiameter = GlucoseBobbleContactView.Layout.ringDiameter
+
+        return ZStack {
             Circle()
-                .stroke(AngularGradient.bobble, lineWidth: 8)
-                .background(Circle().fill(Color.chart))
-                .frame(width: 176, height: 176)
+                .fill(Color.chart)
+                .frame(width: ringDiameter, height: ringDiameter)
 
-            VStack(spacing: 2) {
-                Text(snapshot.glucoseText)
-                    .font(.system(size: 64, weight: .bold, design: .rounded))
-                    .foregroundStyle(snapshot.glucoseColor)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-
-                HStack(spacing: 6) {
-                    trendArrows
-                    Text(snapshot.units.rawValue)
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.horizontal, 20)
+            GlucoseBobbleContactView(
+                glucoseText: snapshot.glucoseText,
+                // No "minutes ago" on a frozen card; the units take the line the bobble uses for the delta.
+                minutesAgoText: nil,
+                deltaText: snapshot.units.rawValue,
+                glucoseColor: snapshot.glucoseColor,
+                rotationDegrees: snapshot.bobbleRotationDegrees
+            )
         }
-    }
-
-    @ViewBuilder private var trendArrows: some View {
-        if let rotation = snapshot.trendRotation {
-            HStack(spacing: 0) {
-                ForEach(0 ..< snapshot.trendArrowCount, id: \.self) { _ in
-                    Image(systemName: "arrow.right")
-                        .font(.callout.weight(.bold))
-                        .foregroundStyle(Color.bobbleAccent)
-                        .rotationEffect(.degrees(rotation))
-                }
-            }
-        }
+        .frame(width: native, height: native)
+        .scaleEffect(Self.heroScale)
+        .frame(width: native * Self.heroScale, height: native * Self.heroScale)
     }
 
     // MARK: - Graph

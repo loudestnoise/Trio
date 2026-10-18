@@ -88,8 +88,9 @@ struct ShareCardSnapshot: Identifiable {
         return !Calendar.current.isDate(determinationDate, equalTo: readingDate, toGranularity: .minute)
     }
 
-    /// Rotation of a right-pointing arrow, matching the bobble's trend mapping. `nil` hides the arrow.
-    var trendRotation: Double? {
+    /// Where the bobble's trend triangle sits on the ring, using the same mapping as the home bobble and
+    /// the contact image: -90 is straight up, 0 flat, 90 straight down. Unknown trends read as flat.
+    var bobbleRotationDegrees: Double {
         switch direction {
         case .doubleUp,
              .singleUp,
@@ -97,8 +98,6 @@ struct ShareCardSnapshot: Identifiable {
             return -90
         case .fortyFiveUp:
             return -45
-        case .flat:
-            return 0
         case .fortyFiveDown:
             return 45
         case .doubleDown,
@@ -106,20 +105,7 @@ struct ShareCardSnapshot: Identifiable {
              .tripleDown:
             return 90
         default:
-            return nil
-        }
-    }
-
-    var trendArrowCount: Int {
-        switch direction {
-        case .doubleDown,
-             .doubleUp:
-            return 2
-        case .tripleDown,
-             .tripleUp:
-            return 3
-        default:
-            return 1
+            return 0
         }
     }
 

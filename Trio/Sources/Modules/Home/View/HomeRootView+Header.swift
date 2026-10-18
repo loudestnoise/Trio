@@ -91,12 +91,10 @@ extension Home.RootView {
                 state.shouldDisplayCGMSetupSheet.toggle()
             }
         }
-        // Long press shares a frozen snapshot of the current glucose as an image card.
-        // (It used to open the snooze sheet; snooze is still reachable from the VoiceOver action below.)
         .onLongPressGesture {
-            let impactLight = UIImpactFeedbackGenerator(style: .light)
-            impactLight.impactOccurred()
-            shareCardSnapshot = ShareCardSnapshot(state: state)
+            let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
+            impactHeavy.impactOccurred()
+            showSnoozeSheet = true
         }
         .accessibilityAction {
             if !state.cgmAvailable {
@@ -107,9 +105,6 @@ extension Home.RootView {
         }
         .accessibilityAction(named: Text("Snooze alerts")) {
             showSnoozeSheet = true
-        }
-        .accessibilityAction(named: Text("Share glucose card")) {
-            shareCardSnapshot = ShareCardSnapshot(state: state)
         }
     }
 
