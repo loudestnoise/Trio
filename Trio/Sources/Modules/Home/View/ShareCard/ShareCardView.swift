@@ -7,8 +7,8 @@ import SwiftUI
 /// (4:5, the portrait ratio social apps expect). It is built only from a `ShareCardSnapshot`.
 struct ShareCardView: View {
     static let size = CGSize(width: 360, height: 450)
-    /// 256 pt native bobble canvas × 0.72 ≈ 184 pt on the card.
-    private static let heroScale: CGFloat = 0.72
+    /// Side of the bobble on the card (its native canvas is 256 pt).
+    private static let heroSide: CGFloat = 184
 
     let snapshot: ShareCardSnapshot
 
@@ -49,29 +49,8 @@ struct ShareCardView: View {
 
     // MARK: - Glucose
 
-    /// Trio's own contact-image bobble (ring, glucose number, trend triangle orbiting the ring), drawn at
-    /// its native 256 pt canvas and scaled to fit the card.
     private var hero: some View {
-        let native = GlucoseBobbleContactView.Layout.nativeSize
-        let ringDiameter = GlucoseBobbleContactView.Layout.ringDiameter
-
-        return ZStack {
-            Circle()
-                .fill(Color.chart)
-                .frame(width: ringDiameter, height: ringDiameter)
-
-            GlucoseBobbleContactView(
-                glucoseText: snapshot.glucoseText,
-                // No "minutes ago" on a frozen card; the units take the line the bobble uses for the delta.
-                minutesAgoText: nil,
-                deltaText: snapshot.units.rawValue,
-                glucoseColor: snapshot.glucoseColor,
-                rotationDegrees: snapshot.bobbleRotationDegrees
-            )
-        }
-        .frame(width: native, height: native)
-        .scaleEffect(Self.heroScale)
-        .frame(width: native * Self.heroScale, height: native * Self.heroScale)
+        ShareBobbleView(snapshot: snapshot, side: Self.heroSide)
     }
 
     // MARK: - Graph
@@ -177,5 +156,41 @@ struct ShareCardView: View {
             .foregroundStyle(
                 LinearGradient(colors: Color.bobbleGradientColors, startPoint: .leading, endPoint: .trailing)
             )
+    }
+}
+
+/// Trio's own contact-image bobble (ring, glucose number, trend triangle orbiting the ring), drawn at its
+/// native 256 pt canvas and scaled to `side`. Used inside the card and on its own as a transparent
+/// overlay image. Only the inside of the ring is filled, so the number stays readable over a photo.
+struct ShareBobbleView: View {
+    /// Side of the bobble-only image: 1080 × 1080 px on a 3x screen.
+    static let overlaySide: CGFloat = 360
+
+    let snapshot: ShareCardSnapshot
+    let side: CGFloat
+
+    var body: some View {
+        let native = GlucoseBobbleContactView.Layout.nativeSize
+        let ringDiameter = GlucoseBobbleContactView.Layout.ringDiameter
+        let scale = side / native
+
+        ZStack {
+            Circle()
+                .fill(Color.chart)
+                .frame(width: ringDiameter, height: ringDiameter)
+
+            GlucoseBobbleContactView(
+                glucoseText: snapshot.glucoseText,
+                // No "minutes ago" on a frozen image; the units take the line the bobble uses for the delta.
+                minutesAgoText: nil,
+                deltaText: snapshot.units.rawValue,
+                glucoseColor: snapshot.glucoseColor,
+                rotationDegrees: snapshot.bobbleRotationDegrees
+            )
+        }
+        .frame(width: native, height: native)
+        .scaleEffect(scale)
+        .frame(width: side, height: side)
+        .environment(\.colorScheme, .dark)
     }
 }
