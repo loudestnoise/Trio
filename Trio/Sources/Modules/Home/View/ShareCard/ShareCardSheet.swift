@@ -1,5 +1,5 @@
 import SwiftUI
-import UniformTypeIdentifiers
+import UIKit
 
 /// Sheet opened from "Share" in the snooze sheet: previews the share image and offers the share sheet.
 ///
@@ -82,17 +82,45 @@ struct ShareCardSheet: View {
     }
 
     @ViewBuilder private var shareButton: some View {
-        if let image = currentImage, let png = image.pngData() {
-            ShareLink(
-                item: SharedPNG(data: png),
-                preview: SharePreview("Share", image: Image(uiImage: image))
-            ) {
+        if currentImage != nil {
+            Button(action: presentShareSheet) {
                 Image(systemName: "square.and.arrow.up")
             }
+            .accessibilityLabel(Text("Share"))
         } else {
             Image(systemName: "square.and.arrow.up")
                 .foregroundStyle(.secondary)
         }
+    }
+
+    /// Presents the system share sheet directly (rather than `ShareLink`) for two reasons: it offers
+    /// "Save Image" because the item is a real `UIImage`, and its completion handler tells us when an
+    /// action finished, so this sheet can close itself. Cancelling leaves it open.
+    private func presentShareSheet() {
+        // Rebuilt from PNG data so the bobble's transparent background survives saving and copying.
+        guard let png = currentImage?.pngData(), let image = UIImage(data: png),
+              let presenter = Self.topViewController()
+        else { return }
+
+        let controller = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        let dismiss = self.dismiss
+        controller.completionWithItemsHandler = { _, completed, _, _ in
+            guard completed else { return }
+            Task { @MainActor in dismiss() }
+        }
+        controller.popoverPresentationController?.sourceView = presenter.view
+        presenter.present(controller, animated: true)
+    }
+
+    /// Top-most view controller of the key window, i.e. the controller hosting this sheet.
+    private static func topViewController() -> UIViewController? {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let window = scenes.flatMap(\.windows).first(where: \.isKeyWindow) ?? scenes.first?.windows.first
+        var top = window?.rootViewController
+        while let presented = top?.presentedViewController {
+            top = presented
+        }
+        return top
     }
 
     /// Renders both styles once at the screen's scale: the card at 1080 × 1350 px and the bobble at
@@ -112,18 +140,5 @@ struct ShareCardSheet: View {
             renderer.isOpaque = false
             bobbleImage = renderer.uiImage
         }
-    }
-}
-
-/// PNG export for the share sheet. PNG (rather than letting `Image` pick a format) keeps the bobble's
-/// transparency, so it can be laid over a photo.
-private struct SharedPNG: Transferable {
-    let data: Data
-
-    static var transferRepresentation: some TransferRepresentation {
-        DataRepresentation(exportedContentType: .png) { item in
-            item.data
-        }
-        .suggestedFileName("Trio.png")
     }
 }
