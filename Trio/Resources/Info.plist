@@ -93,6 +93,8 @@
 	<string>Health App is used to store blood glucose, carbs and insulin</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(COPYRIGHT_NOTICE)</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Photos is used to save glucose share images you choose to save.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>TeamID</key>
