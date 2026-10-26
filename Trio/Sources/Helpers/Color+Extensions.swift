@@ -1,6 +1,33 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Glucose bobble gradient
+
+/// Colors of the glucose bobble's ring, shared with the share card so both always match.
+extension Color {
+    /// Violet → blue → cyan; the first and last stops are equal so the angular gradient closes seamlessly.
+    static let bobbleGradientColors: [Color] = [
+        Color(red: 0.7215686275, green: 0.3411764706, blue: 1),
+        Color(red: 0.6235294118, green: 0.4235294118, blue: 0.9803921569),
+        Color(red: 0.4862745098, green: 0.5450980392, blue: 0.9529411765),
+        Color(red: 0.3411764706, green: 0.6666666667, blue: 0.9254901961),
+        Color(red: 0.262745098, green: 0.7333333333, blue: 0.9137254902),
+        Color(red: 0.7215686275, green: 0.3411764706, blue: 1)
+    ]
+
+    /// Cyan accent of the bobble (trend triangle and glow).
+    static let bobbleAccent = Color(red: 0.262745098, green: 0.7333333333, blue: 0.9137254902)
+}
+
+extension AngularGradient {
+    static let bobble = AngularGradient(
+        colors: Color.bobbleGradientColors,
+        center: .center,
+        startAngle: .degrees(270),
+        endAngle: .degrees(-90)
+    )
+}
+
 extension Color {
     static let carbs = Color("carbs")
 

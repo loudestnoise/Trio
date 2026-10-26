@@ -23,19 +23,12 @@ struct CurrentGlucoseView: View {
     var cgmWarmupEndsAt: Date?
 
     @State private var rotationDegrees: Double = 0.0
-    @State private var angularGradient = AngularGradient(colors: [
-        Color(red: 0.7215686275, green: 0.3411764706, blue: 1),
-        Color(red: 0.6235294118, green: 0.4235294118, blue: 0.9803921569),
-        Color(red: 0.4862745098, green: 0.5450980392, blue: 0.9529411765),
-        Color(red: 0.3411764706, green: 0.6666666667, blue: 0.9254901961),
-        Color(red: 0.262745098, green: 0.7333333333, blue: 0.9137254902),
-        Color(red: 0.7215686275, green: 0.3411764706, blue: 1)
-    ], center: .center, startAngle: .degrees(270), endAngle: .degrees(-90))
+    @State private var angularGradient = AngularGradient.bobble
 
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let triangleColor = Color(red: 0.262745098, green: 0.7333333333, blue: 0.9137254902)
+        let triangleColor = Color.bobbleAccent
 
         if cgmAvailable {
             if let stale = stalenessState {
