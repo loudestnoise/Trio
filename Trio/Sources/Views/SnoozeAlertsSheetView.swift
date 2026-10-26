@@ -7,6 +7,9 @@ import Swinject
 struct SnoozeAlertsSheetView: View {
     let resolver: Resolver
     @Binding var isPresented: Bool
+    /// When set, a "Share" row is shown beneath the durations. Only the home screen provides it, since
+    /// it needs the home view model's glucose data; the Settings entry point leaves it `nil`.
+    var onShare: (() -> Void)?
 
     @State private var snoozeUntilDate: Date = .distantPast
 
@@ -54,6 +57,26 @@ struct SnoozeAlertsSheetView: View {
                         }
                     }
                 }.listRowBackground(Color.chart)
+
+                if let onShare {
+                    Section {
+                        Button {
+                            onShare()
+                        } label: {
+                            HStack {
+                                Label {
+                                    Text("Share").foregroundStyle(.primary)
+                                } icon: {
+                                    Image(systemName: "square.and.arrow.up").foregroundStyle(.tint)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
+                            }
+                        }
+                    }.listRowBackground(Color.chart)
+                }
             }
             .scrollContentBackground(.hidden)
             .background(appState.trioBackgroundColor(for: colorScheme))
