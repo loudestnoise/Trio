@@ -12,6 +12,7 @@ struct ShareCardSheet: View {
     }
 
     let snapshot: ShareCardSnapshot
+    var theme: ShareTheme = .standard
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.displayScale) private var displayScale
@@ -36,7 +37,7 @@ struct ShareCardSheet: View {
                 }
             }
             .padding(.top, 8)
-            .navigationTitle(Text("Share"))
+            .navigationTitle(theme == .halloween ? Text("Share (Halloween)") : Text("Share"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -58,7 +59,7 @@ struct ShareCardSheet: View {
         case .card:
             let size = ShareCardView.size
             let fit = min(1, (available.width - 32) / size.width, (available.height - 24) / size.height)
-            ShareCardView(snapshot: snapshot)
+            ShareCardView(snapshot: snapshot, theme: theme)
                 .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 .scaleEffect(fit)
                 .frame(width: size.width * fit, height: size.height * fit)
@@ -66,7 +67,7 @@ struct ShareCardSheet: View {
             let side = ShareBobbleView.overlaySide
             let fit = min(1, (available.width - 32) / side, (available.height - 24) / side)
             // Shown over the sheet's own background; the shared PNG is transparent outside the ring.
-            ShareBobbleView(snapshot: snapshot, side: side)
+            ShareBobbleView(snapshot: snapshot, side: side, theme: theme)
                 .scaleEffect(fit)
                 .frame(width: side * fit, height: side * fit)
         }
@@ -127,14 +128,14 @@ struct ShareCardSheet: View {
     /// 1080 × 1080 px on a 3x device. The bobble keeps a transparent background.
     private func renderImages() {
         if cardImage == nil {
-            let renderer = ImageRenderer(content: ShareCardView(snapshot: snapshot))
+            let renderer = ImageRenderer(content: ShareCardView(snapshot: snapshot, theme: theme))
             renderer.scale = displayScale
             renderer.isOpaque = true
             cardImage = renderer.uiImage
         }
         if bobbleImage == nil {
             let renderer = ImageRenderer(
-                content: ShareBobbleView(snapshot: snapshot, side: ShareBobbleView.overlaySide)
+                content: ShareBobbleView(snapshot: snapshot, side: ShareBobbleView.overlaySide, theme: theme)
             )
             renderer.scale = displayScale
             renderer.isOpaque = false

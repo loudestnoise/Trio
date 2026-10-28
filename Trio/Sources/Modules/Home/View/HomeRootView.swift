@@ -45,6 +45,7 @@ extension Home {
         @State var shareCardSnapshot: ShareCardSnapshot?
         /// Captured when "Share" is tapped in the snooze sheet, presented once that sheet has dismissed.
         @State var pendingShareCardSnapshot: ShareCardSnapshot?
+        @State var shareCardTheme: ShareTheme = .standard
         @State var showManualGlucose: Bool = false
         @State var showReleaseNotes: Bool = false
         @ObservedObject var releaseNotesService = ReleaseNotesService.shared
@@ -302,12 +303,17 @@ extension Home {
                 }
             }) {
                 SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet, onShare: {
+                    shareCardTheme = .standard
+                    pendingShareCardSnapshot = ShareCardSnapshot(state: state)
+                    showSnoozeSheet = false
+                }, onShareHalloween: {
+                    shareCardTheme = .halloween
                     pendingShareCardSnapshot = ShareCardSnapshot(state: state)
                     showSnoozeSheet = false
                 })
             }
             .sheet(item: $shareCardSnapshot) { snapshot in
-                ShareCardSheet(snapshot: snapshot)
+                ShareCardSheet(snapshot: snapshot, theme: shareCardTheme)
             }
             .sheet(isPresented: $showReleaseNotes) {
                 if let notes = releaseNotesService.notes {
