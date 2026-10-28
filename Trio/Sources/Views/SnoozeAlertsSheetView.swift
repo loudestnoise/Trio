@@ -10,6 +10,8 @@ struct SnoozeAlertsSheetView: View {
     /// When set, a "Share" row is shown beneath the durations. Only the home screen provides it, since
     /// it needs the home view model's glucose data; the Settings entry point leaves it `nil`.
     var onShare: (() -> Void)?
+    /// Same as `onShare`, with the orange-and-black Halloween look. Shown as its own row when set.
+    var onShareHalloween: (() -> Void)?
 
     @State private var snoozeUntilDate: Date = .distantPast
 
@@ -68,6 +70,26 @@ struct SnoozeAlertsSheetView: View {
                                     Text("Share").foregroundStyle(.primary)
                                 } icon: {
                                     Image(systemName: "square.and.arrow.up").foregroundStyle(.tint)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
+                            }
+                        }
+                    }.listRowBackground(Color.chart)
+                }
+
+                if let onShareHalloween {
+                    Section {
+                        Button {
+                            onShareHalloween()
+                        } label: {
+                            HStack {
+                                Label {
+                                    Text("Share (Halloween)").foregroundStyle(.primary)
+                                } icon: {
+                                    Image(systemName: "theatermasks.fill").foregroundStyle(.orange)
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")

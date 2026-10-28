@@ -1,6 +1,70 @@
 import Charts
 import SwiftUI
 
+/// Colors of a share image. `.standard` is Trio's own look; `.halloween` swaps in orange and black.
+enum ShareTheme: Hashable {
+    case standard
+    case halloween
+
+    var backgroundColors: [Color] {
+        switch self {
+        case .standard: return [Color.bgDarkBlue, Color.bgDarkerDarkBlue]
+        case .halloween: return [Color(red: 0.16, green: 0.07, blue: 0.0), .black]
+        }
+    }
+
+    /// Closed loop (first == last) so the angular gradient has no seam; `nil` keeps the standard ring.
+    var ringColors: [Color]? {
+        switch self {
+        case .standard: return nil
+        case .halloween: return [
+                Color(red: 1.0, green: 0.62, blue: 0.1),
+                Color(red: 1.0, green: 0.45, blue: 0.0),
+                Color(red: 0.85, green: 0.3, blue: 0.0),
+                Color(red: 1.0, green: 0.45, blue: 0.0),
+                Color(red: 1.0, green: 0.62, blue: 0.1),
+                Color(red: 1.0, green: 0.62, blue: 0.1)
+            ]
+        }
+    }
+
+    var accent: Color? {
+        switch self {
+        case .standard: return nil
+        case .halloween: return Color(red: 1.0, green: 0.45, blue: 0.0)
+        }
+    }
+
+    var ringFill: Color {
+        switch self {
+        case .standard: return Color.chart
+        case .halloween: return .black
+        }
+    }
+
+    /// Tint for the in-range band, grid lines and small captions.
+    var highlight: Color {
+        switch self {
+        case .standard: return Color.loopGreen
+        case .halloween: return Color(red: 1.0, green: 0.5, blue: 0.0)
+        }
+    }
+
+    var brandColors: [Color] {
+        switch self {
+        case .standard: return Color.bobbleGradientColors
+        case .halloween: return [Color(red: 1.0, green: 0.62, blue: 0.1), Color(red: 0.85, green: 0.3, blue: 0.0)]
+        }
+    }
+
+    var brandText: String {
+        switch self {
+        case .standard: return "Trio"
+        case .halloween: return "🎃 Trio 🎃"
+        }
+    }
+}
+
 /// Standalone card that is rendered to an image for sharing.
 ///
 /// Laid out at 360 × 450 pt, which `ImageRenderer` turns into 1080 × 1350 px on a 3x screen
@@ -11,6 +75,7 @@ struct ShareCardView: View {
     private static let heroSide: CGFloat = 184
 
     let snapshot: ShareCardSnapshot
+    var theme: ShareTheme = .standard
 
     private static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -22,7 +87,7 @@ struct ShareCardView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color.bgDarkBlue, Color.bgDarkerDarkBlue],
+                colors: theme.backgroundColors,
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -50,7 +115,7 @@ struct ShareCardView: View {
     // MARK: - Glucose
 
     private var hero: some View {
-        ShareBobbleView(snapshot: snapshot, side: Self.heroSide)
+        ShareBobbleView(snapshot: snapshot, side: Self.heroSide, theme: theme)
     }
 
     // MARK: - Graph
@@ -68,14 +133,14 @@ struct ShareCardView: View {
                 yStart: .value("Low", low),
                 yEnd: .value("High", high)
             )
-            .foregroundStyle(Color.loopGreen.opacity(0.14))
+            .foregroundStyle(theme.highlight.opacity(0.14))
 
             ForEach(snapshot.readings) { reading in
                 PointMark(
                     x: .value("Time", reading.date),
                     y: .value("Glucose", snapshot.chartValue(Decimal(reading.mgdL)))
                 )
-                .foregroundStyle(snapshot.color(forMgdL: reading.mgdL))
+                .foregroundStyle(pointColor(forMgdL: reading.mgdL))
                 .symbolSize(24)
             }
         }
@@ -98,6 +163,13 @@ struct ShareCardView: View {
             }
         }
         .frame(height: 104)
+    }
+
+    /// Out-of-range points keep their glucose colors in every theme; in-range ones take the theme's tint.
+    private func pointColor(forMgdL mgdL: Int) -> Color {
+        let value = Decimal(mgdL)
+        let inRange = value > snapshot.lowGlucose && value < snapshot.highGlucose
+        return theme == .halloween && inRange ? theme.highlight : snapshot.color(forMgdL: mgdL)
     }
 
     // MARK: - Stats
@@ -150,11 +222,11 @@ struct ShareCardView: View {
     }
 
     private var brandLabel: some View {
-        Text(verbatim: "Trio")
+        Text(verbatim: theme.brandText)
             .font(.system(size: 13, weight: .heavy, design: .rounded))
             .tracking(1.5)
             .foregroundStyle(
-                LinearGradient(colors: Color.bobbleGradientColors, startPoint: .leading, endPoint: .trailing)
+                LinearGradient(colors: theme.brandColors, startPoint: .leading, endPoint: .trailing)
             )
     }
 }
@@ -168,6 +240,7 @@ struct ShareBobbleView: View {
 
     let snapshot: ShareCardSnapshot
     let side: CGFloat
+    var theme: ShareTheme = .standard
 
     var body: some View {
         let native = GlucoseBobbleContactView.Layout.nativeSize
@@ -176,7 +249,7 @@ struct ShareBobbleView: View {
 
         ZStack {
             Circle()
-                .fill(Color.chart)
+                .fill(theme.ringFill)
                 .frame(width: ringDiameter, height: ringDiameter)
 
             GlucoseBobbleContactView(
@@ -184,13 +257,20 @@ struct ShareBobbleView: View {
                 // No "minutes ago" on a frozen image; the units take the line the bobble uses for the delta.
                 minutesAgoText: nil,
                 deltaText: snapshot.units.rawValue,
-                glucoseColor: snapshot.glucoseColor,
-                rotationDegrees: snapshot.bobbleRotationDegrees
+                glucoseColor: numberColor,
+                rotationDegrees: snapshot.bobbleRotationDegrees,
+                ringColors: theme.ringColors,
+                accentColor: theme.accent
             )
         }
         .frame(width: native, height: native)
         .scaleEffect(scale)
         .frame(width: side, height: side)
         .environment(\.colorScheme, .dark)
+    }
+
+    /// In range the number is plain text (orange in Halloween); out of range it keeps its warning color.
+    private var numberColor: Color {
+        theme == .halloween && !snapshot.isOutOfRange ? theme.highlight : snapshot.glucoseColor
     }
 }
