@@ -146,8 +146,12 @@ struct ShareCardSnapshot: Identifiable {
 
     /// The big number is plain text in range and colored outside of it, like on the bobble.
     var glucoseColor: Color {
+        guard !isOutOfRange else { return color(forMgdL: glucoseMgdL) }
+        return Color.primary
+    }
+
+    var isOutOfRange: Bool {
         let value = Decimal(glucoseMgdL)
-        guard value <= lowGlucose || value >= highGlucose else { return Color.primary }
-        return color(forMgdL: glucoseMgdL)
+        return value <= lowGlucose || value >= highGlucose
     }
 }

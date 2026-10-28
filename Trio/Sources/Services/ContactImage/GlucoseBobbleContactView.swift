@@ -9,6 +9,9 @@ struct GlucoseBobbleContactView: View {
     let deltaText: String?
     let glucoseColor: Color
     let rotationDegrees: Double
+    /// Overrides for themed renders (e.g. the Halloween share image); `nil` keeps the standard bobble colors.
+    var ringColors: [Color]?
+    var accentColor: Color?
 
     enum Layout {
         static let nativeSize: CGFloat = 256
@@ -29,11 +32,14 @@ struct GlucoseBobbleContactView: View {
     }
 
     private var triangleColor: Color {
-        Color(red: 0.262745098, green: 0.7333333333, blue: 0.9137254902)
+        accentColor ?? Color(red: 0.262745098, green: 0.7333333333, blue: 0.9137254902)
     }
 
     private var angularGradient: AngularGradient {
-        AngularGradient(colors: [
+        if let ringColors {
+            return AngularGradient(colors: ringColors, center: .center, startAngle: .degrees(270), endAngle: .degrees(-90))
+        }
+        return AngularGradient(colors: [
             Color(red: 0.7215686275, green: 0.3411764706, blue: 1),
             Color(red: 0.6235294118, green: 0.4235294118, blue: 0.9803921569),
             Color(red: 0.4862745098, green: 0.5450980392, blue: 0.9529411765),
