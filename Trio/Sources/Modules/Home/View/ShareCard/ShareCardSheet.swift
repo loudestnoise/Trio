@@ -37,7 +37,7 @@ struct ShareCardSheet: View {
                 }
             }
             .padding(.top, 8)
-            .navigationTitle(theme == .halloween ? Text("Share (Halloween)") : Text("Share"))
+            .navigationTitle(Text(theme.name))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

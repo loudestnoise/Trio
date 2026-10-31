@@ -10,8 +10,8 @@ struct SnoozeAlertsSheetView: View {
     /// When set, a "Share" row is shown beneath the durations. Only the home screen provides it, since
     /// it needs the home view model's glucose data; the Settings entry point leaves it `nil`.
     var onShare: (() -> Void)?
-    /// Same as `onShare`, with the orange-and-black Halloween look. Shown as its own row when set.
-    var onShareHalloween: (() -> Void)?
+    /// Same as `onShare`, with a seasonal look. When set, each of `ShareTheme.seasonal` gets its own row.
+    var onShareSeasonal: ((ShareTheme) -> Void)?
 
     @State private var snoozeUntilDate: Date = .distantPast
 
@@ -80,21 +80,23 @@ struct SnoozeAlertsSheetView: View {
                     }.listRowBackground(Color.chart)
                 }
 
-                if let onShareHalloween {
+                if let onShareSeasonal {
                     Section {
-                        Button {
-                            onShareHalloween()
-                        } label: {
-                            HStack {
-                                Label {
-                                    Text("Share (Halloween)").foregroundStyle(.primary)
-                                } icon: {
-                                    Image(systemName: "theatermasks.fill").foregroundStyle(.orange)
+                        ForEach(ShareTheme.seasonal, id: \.self) { theme in
+                            Button {
+                                onShareSeasonal(theme)
+                            } label: {
+                                HStack {
+                                    Label {
+                                        Text(theme.name).foregroundStyle(.primary)
+                                    } icon: {
+                                        Image(systemName: theme.systemImage).foregroundStyle(theme.iconColor)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
                                 }
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
                             }
                         }
                     }.listRowBackground(Color.chart)
