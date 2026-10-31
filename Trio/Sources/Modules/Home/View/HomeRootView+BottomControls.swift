@@ -454,11 +454,11 @@ extension Home.RootView {
         // whole panel navigates; the cancel buttons' own gestures take precedence
         .contentShape(Rectangle())
         .onTapGesture {
-            selectedTab = 2
+            selectedTab = .adjustments
         }
         .accessibilityHint(Text(String(localized: "Opens adjustments", comment: "Accessibility hint")))
         .accessibilityAddTraits(.isButton)
-        .accessibilityAction { selectedTab = 2 }
+        .accessibilityAction { selectedTab = .adjustments }
         .padding(.horizontal, 10)
     }
 
@@ -797,12 +797,12 @@ extension Home.RootView {
 
     /// The mode picker sits on the Settings root, so there is no sub-screen target to push.
     func openDosingModeSetting() {
-        selectedTab = 3
+        selectedTab = .settings
     }
 
     func openMaxIOBSetting() {
         // same target search results push, so scroll + highlight wiggle match
-        selectedTab = 3
+        selectedTab = .settings
         settingsPath.append(SearchResultTarget(
             screen: .unitsAndLimits,
             scrollLabel: "Maximum Insulin on Board (IOB)".localized
@@ -810,7 +810,7 @@ extension Home.RootView {
     }
 
     func openTidepoolSetting() {
-        selectedTab = 3
+        selectedTab = .settings
         settingsPath.append(SearchResultTarget(screen: .tidepoolConfig, scrollLabel: "Tidepool Integration".localized))
     }
 

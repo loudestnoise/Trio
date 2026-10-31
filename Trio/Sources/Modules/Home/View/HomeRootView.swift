@@ -5,6 +5,16 @@ import SwiftUI
 import Swinject
 
 extension Home {
+    /// Home tab bar slots. `treatment` is the dead middle slot under the
+    /// overlaid treatment button on the iOS 26 bar; selecting it is swallowed.
+    enum HomeTab: Hashable {
+        case main
+        case history
+        case treatment
+        case adjustments
+        case settings
+    }
+
     struct RootView: BaseView {
         let resolver: Resolver
 
@@ -24,8 +34,7 @@ extension Home {
         @State var isConfirmStopTempTargetShown = false
         @State var isMenuPresented = false
         @State var showTreatments = false
-        @State var selectedTab: Int = 0
-        static let treatmentTabTag = 4
+        @State var selectedTab: HomeTab = .main
         @State var showQuickPickTreatmentsPicker = false
         @State var showQuickPickTreatmentsNoHistory = false
         @State var showPumpSelection: Bool = false
@@ -387,10 +396,11 @@ extension Home {
 
                     NavigationStack { mainView() }
                         .tabItem { Label("", systemImage: "chart.xyaxis.line").accessibilityLabel(Text("Main")) }
-                        .badge(carbsRequiredBadge).tag(0)
+                        .badge(carbsRequiredBadge).tag(HomeTab.main)
 
                     NavigationStack { History.RootView(resolver: resolver) }
-                        .tabItem { Label("", systemImage: historySFSymbol).accessibilityLabel(Text("History")) }.tag(1)
+                        .tabItem { Label("", systemImage: historySFSymbol).accessibilityLabel(Text("History")) }
+                        .tag(HomeTab.history)
 
                     Spacer()
                         // nbsp title + empty image: invisible item that still
@@ -400,14 +410,14 @@ extension Home {
                         } icon: {
                             Image(uiImage: UIImage())
                         } }
-                        .tag(RootView.treatmentTabTag)
+                        .tag(HomeTab.treatment)
 
                     NavigationStack { Adjustments.RootView(resolver: resolver) }
                         .tabItem {
                             Label(
                                 "",
                                 systemImage: "slider.horizontal.2.gobackward"
-                            ).accessibilityLabel(Text("Adjustments")) }.tag(2)
+                            ).accessibilityLabel(Text("Adjustments")) }.tag(HomeTab.adjustments)
 
                     NavigationStack(path: self.$settingsPath) {
                         Settings.RootView(resolver: resolver) }
@@ -415,7 +425,7 @@ extension Home {
                         .tabItem { Label(
                             "",
                             systemImage: "gear"
-                        ).accessibilityLabel(Text("Settings")) }.tag(3)
+                        ).accessibilityLabel(Text("Settings")) }.tag(HomeTab.settings)
                 }
                 .tint(Color.tabBar)
 
@@ -431,7 +441,7 @@ extension Home {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .blur(radius: state.waitForSuggestion ? 8 : 0)
             .onChange(of: selectedTab) {
-                if selectedTab != 3, !settingsPath.isEmpty {
+                if selectedTab != .settings, !settingsPath.isEmpty {
                     settingsPath = NavigationPath()
                 }
             }
@@ -451,11 +461,11 @@ extension Home {
             return CGPoint(x: x, y: geo.size.height - 156)
         }
 
-        private var modernTabSelection: Binding<Int> {
+        private var modernTabSelection: Binding<HomeTab> {
             Binding(
                 get: { selectedTab },
                 set: { newValue in
-                    if newValue == RootView.treatmentTabTag {
+                    if newValue == .treatment {
                         let previous = selectedTab
                         selectedTab = newValue
                         DispatchQueue.main.async {
@@ -543,10 +553,10 @@ extension Home {
 
                     NavigationStack { mainView() }
                         .tabItem { Label("Main", systemImage: "chart.xyaxis.line") }
-                        .badge(carbsRequiredBadge).tag(0)
+                        .badge(carbsRequiredBadge).tag(HomeTab.main)
 
                     NavigationStack { History.RootView(resolver: resolver) }
-                        .tabItem { Label("History", systemImage: historySFSymbol) }.tag(1)
+                        .tabItem { Label("History", systemImage: historySFSymbol) }.tag(HomeTab.history)
 
                     Spacer()
 
@@ -555,7 +565,7 @@ extension Home {
                             Label(
                                 "Adjustments",
                                 systemImage: "slider.horizontal.2.gobackward"
-                            ) }.tag(2)
+                            ) }.tag(HomeTab.adjustments)
 
                     NavigationStack(path: self.$settingsPath) {
                         Settings.RootView(resolver: resolver) }
@@ -563,7 +573,7 @@ extension Home {
                         .tabItem { Label(
                             "Settings",
                             systemImage: "gear"
-                        ) }.tag(3)
+                        ) }.tag(HomeTab.settings)
                 }
                 .tint(Color.tabBar)
 
@@ -571,7 +581,7 @@ extension Home {
             }.ignoresSafeArea(.keyboard, edges: .bottom).blur(radius: state.waitForSuggestion ? 8 : 0)
                 .onChange(of: selectedTab) {
                     // reset only when leaving Settings; programmatic pushes survive the switch
-                    if selectedTab != 3, !settingsPath.isEmpty {
+                    if selectedTab != .settings, !settingsPath.isEmpty {
                         settingsPath = NavigationPath()
                     }
                 }
