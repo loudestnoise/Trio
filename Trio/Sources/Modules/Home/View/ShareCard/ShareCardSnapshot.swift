@@ -17,6 +17,9 @@ struct ShareCardSnapshot: Identifiable {
     static let graphWindow: TimeInterval = 3 * 60 * 60
 
     let id = UUID()
+    /// Colors to render with. Travels with the snapshot because the sheet that shows it can be
+    /// built from a stale copy of the view's other state.
+    var theme: ShareTheme = .standard
     /// Moment the snapshot was taken; the right edge of the graph.
     let capturedAt: Date
 
