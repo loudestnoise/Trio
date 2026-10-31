@@ -10,7 +10,7 @@ struct SnoozeAlertsSheetView: View {
     /// When set, a "Share" row is shown beneath the durations. Only the home screen provides it, since
     /// it needs the home view model's glucose data; the Settings entry point leaves it `nil`.
     var onShare: (() -> Void)?
-    /// Same as `onShare`, with a seasonal look. When set, each of `ShareTheme.seasonal` gets its own row.
+    /// Same as `onShare`, with a seasonal look. When set, a "Special" row opens a menu of `ShareTheme.seasonal`.
     var onShareSeasonal: ((ShareTheme) -> Void)?
 
     @State private var snoozeUntilDate: Date = .distantPast
@@ -82,21 +82,21 @@ struct SnoozeAlertsSheetView: View {
 
                 if let onShareSeasonal {
                     Section {
-                        ForEach(ShareTheme.seasonal, id: \.self) { theme in
-                            Button {
-                                onShareSeasonal(theme)
-                            } label: {
-                                HStack {
-                                    Label {
-                                        Text(theme.name).foregroundStyle(.primary)
-                                    } icon: {
-                                        Image(systemName: theme.systemImage).foregroundStyle(theme.iconColor)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.gray)
-                                        .font(.footnote)
+                        Menu {
+                            ForEach(ShareTheme.seasonal, id: \.self) { theme in
+                                Button(theme.menuTitle) { onShareSeasonal(theme) }
+                            }
+                        } label: {
+                            HStack {
+                                Label {
+                                    Text("Special").foregroundStyle(.primary)
+                                } icon: {
+                                    Text(verbatim: "✨")
                                 }
+                                Spacer()
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .foregroundColor(.gray)
+                                    .font(.footnote)
                             }
                         }
                     }.listRowBackground(Color.chart)

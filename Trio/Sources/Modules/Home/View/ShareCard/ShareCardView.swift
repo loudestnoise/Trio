@@ -10,7 +10,7 @@ enum ShareTheme: Hashable {
     case thanksgiving
     case christmas
 
-    /// Themes offered as their own "Share (…)" rows in the snooze sheet, in display order.
+    /// Themes offered in the snooze sheet's "Special" menu, in display order.
     static let seasonal: [ShareTheme] = [.halloween, .thanksgiving, .christmas]
 
     var name: String {
@@ -22,21 +22,13 @@ enum ShareTheme: Hashable {
         }
     }
 
-    var systemImage: String {
+    /// Entry in the snooze sheet's "Special" menu, led by the theme's emoji.
+    var menuTitle: String {
         switch self {
-        case .standard: return "square.and.arrow.up"
-        case .halloween: return "theatermasks.fill"
-        case .thanksgiving: return "leaf.fill"
-        case .christmas: return "tree.fill"
-        }
-    }
-
-    var iconColor: Color {
-        switch self {
-        case .standard: return .accentColor
-        case .halloween: return .orange
-        case .thanksgiving: return Color(red: 0.93, green: 0.45, blue: 0.1)
-        case .christmas: return Color(red: 0.2, green: 0.7, blue: 0.3)
+        case .standard: return String(localized: "Standard")
+        case .halloween: return "🎃 " + String(localized: "Halloween")
+        case .thanksgiving: return "🦃 " + String(localized: "Thanksgiving")
+        case .christmas: return "🎄 " + String(localized: "Christmas")
         }
     }
 
