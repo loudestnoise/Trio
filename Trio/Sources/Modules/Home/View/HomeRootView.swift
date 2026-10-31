@@ -295,9 +295,9 @@ extension Home {
                 SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet, onShare: {
                     pendingShareCardSnapshot = ShareCardSnapshot(state: state)
                     showSnoozeSheet = false
-                }, onShareHalloween: {
+                }, onShareSeasonal: { theme in
                     pendingShareCardSnapshot = ShareCardSnapshot(state: state)
-                    pendingShareCardSnapshot?.theme = .halloween
+                    pendingShareCardSnapshot?.theme = theme
                     showSnoozeSheet = false
                 })
             }

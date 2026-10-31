@@ -1,15 +1,51 @@
 import Charts
 import SwiftUI
 
-/// Colors of a share image. `.standard` is Trio's own look; `.halloween` swaps in orange and black.
+/// Colors of a share image. `.standard` is Trio's own look; the seasonal themes swap in holiday
+/// colors: orange and black for Halloween, red, orange, yellow and brown for Thanksgiving, and red
+/// and green for Christmas.
 enum ShareTheme: Hashable {
     case standard
     case halloween
+    case thanksgiving
+    case christmas
+
+    /// Themes offered as their own "Share (…)" rows in the snooze sheet, in display order.
+    static let seasonal: [ShareTheme] = [.halloween, .thanksgiving, .christmas]
+
+    var name: String {
+        switch self {
+        case .standard: return String(localized: "Share")
+        case .halloween: return String(localized: "Share (Halloween)")
+        case .thanksgiving: return String(localized: "Share (Thanksgiving)")
+        case .christmas: return String(localized: "Share (Christmas)")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .standard: return "square.and.arrow.up"
+        case .halloween: return "theatermasks.fill"
+        case .thanksgiving: return "leaf.fill"
+        case .christmas: return "tree.fill"
+        }
+    }
+
+    var iconColor: Color {
+        switch self {
+        case .standard: return .accentColor
+        case .halloween: return .orange
+        case .thanksgiving: return Color(red: 0.93, green: 0.45, blue: 0.1)
+        case .christmas: return Color(red: 0.2, green: 0.7, blue: 0.3)
+        }
+    }
 
     var backgroundColors: [Color] {
         switch self {
         case .standard: return [Color.bgDarkBlue, Color.bgDarkerDarkBlue]
         case .halloween: return [Color(red: 0.16, green: 0.07, blue: 0.0), .black]
+        case .thanksgiving: return [Color(red: 0.22, green: 0.11, blue: 0.04), Color(red: 0.1, green: 0.05, blue: 0.02)]
+        case .christmas: return [Color(red: 0.03, green: 0.17, blue: 0.08), Color(red: 0.01, green: 0.07, blue: 0.03)]
         }
     }
 
@@ -25,6 +61,20 @@ enum ShareTheme: Hashable {
                 Color(red: 1.0, green: 0.62, blue: 0.1),
                 Color(red: 1.0, green: 0.62, blue: 0.1)
             ]
+        case .thanksgiving: return [
+                Color(red: 0.75, green: 0.16, blue: 0.1),
+                Color(red: 0.93, green: 0.45, blue: 0.1),
+                Color(red: 0.98, green: 0.78, blue: 0.2),
+                Color(red: 0.93, green: 0.45, blue: 0.1),
+                Color(red: 0.75, green: 0.16, blue: 0.1)
+            ]
+        case .christmas: return [
+                Color(red: 0.8, green: 0.1, blue: 0.12),
+                Color(red: 0.1, green: 0.55, blue: 0.25),
+                Color(red: 0.8, green: 0.1, blue: 0.12),
+                Color(red: 0.1, green: 0.55, blue: 0.25),
+                Color(red: 0.8, green: 0.1, blue: 0.12)
+            ]
         }
     }
 
@@ -32,6 +82,8 @@ enum ShareTheme: Hashable {
         switch self {
         case .standard: return nil
         case .halloween: return Color(red: 1.0, green: 0.45, blue: 0.0)
+        case .thanksgiving: return Color(red: 0.93, green: 0.45, blue: 0.1)
+        case .christmas: return Color(red: 0.8, green: 0.1, blue: 0.12)
         }
     }
 
@@ -39,6 +91,8 @@ enum ShareTheme: Hashable {
         switch self {
         case .standard: return Color.chart
         case .halloween: return .black
+        case .thanksgiving: return Color(red: 0.16, green: 0.08, blue: 0.03)
+        case .christmas: return Color(red: 0.02, green: 0.1, blue: 0.05)
         }
     }
 
@@ -47,6 +101,8 @@ enum ShareTheme: Hashable {
         switch self {
         case .standard: return Color.loopGreen
         case .halloween: return Color(red: 1.0, green: 0.5, blue: 0.0)
+        case .thanksgiving: return Color(red: 0.98, green: 0.72, blue: 0.18)
+        case .christmas: return Color(red: 0.3, green: 0.8, blue: 0.4)
         }
     }
 
@@ -54,6 +110,8 @@ enum ShareTheme: Hashable {
         switch self {
         case .standard: return Color.bobbleGradientColors
         case .halloween: return [Color(red: 1.0, green: 0.62, blue: 0.1), Color(red: 0.85, green: 0.3, blue: 0.0)]
+        case .thanksgiving: return [Color(red: 0.98, green: 0.78, blue: 0.2), Color(red: 0.75, green: 0.16, blue: 0.1)]
+        case .christmas: return [Color(red: 0.9, green: 0.15, blue: 0.15), Color(red: 0.2, green: 0.7, blue: 0.3)]
         }
     }
 
@@ -61,6 +119,8 @@ enum ShareTheme: Hashable {
         switch self {
         case .standard: return "Trio"
         case .halloween: return "🎃 Trio 🎃"
+        case .thanksgiving: return "🦃 Trio 🦃"
+        case .christmas: return "🎄 Trio 🎄"
         }
     }
 }
@@ -169,7 +229,7 @@ struct ShareCardView: View {
     private func pointColor(forMgdL mgdL: Int) -> Color {
         let value = Decimal(mgdL)
         let inRange = value > snapshot.lowGlucose && value < snapshot.highGlucose
-        return theme == .halloween && inRange ? theme.highlight : snapshot.color(forMgdL: mgdL)
+        return theme != .standard && inRange ? theme.highlight : snapshot.color(forMgdL: mgdL)
     }
 
     // MARK: - Stats
@@ -269,8 +329,8 @@ struct ShareBobbleView: View {
         .environment(\.colorScheme, .dark)
     }
 
-    /// In range the number is plain text (orange in Halloween); out of range it keeps its warning color.
+    /// In range the number takes a seasonal theme's tint; out of range it keeps its warning color.
     private var numberColor: Color {
-        theme == .halloween && !snapshot.isOutOfRange ? theme.highlight : snapshot.glucoseColor
+        theme != .standard && !snapshot.isOutOfRange ? theme.highlight : snapshot.glucoseColor
     }
 }
