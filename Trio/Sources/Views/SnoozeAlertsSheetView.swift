@@ -10,10 +10,12 @@ struct SnoozeAlertsSheetView: View {
     /// When set, a "Share" row is shown beneath the durations. Only the home screen provides it, since
     /// it needs the home view model's glucose data; the Settings entry point leaves it `nil`.
     var onShare: (() -> Void)?
-    /// Same as `onShare`, with a seasonal look. When set, a "Special" row opens a menu of `ShareTheme.seasonal`.
+    /// Same as `onShare`, with a seasonal look. When set, a "Special" row opens a menu of the themes
+    /// `ShareTheme.available()` offers today; the row is hidden when no holiday is near.
     var onShareSeasonal: ((ShareTheme) -> Void)?
 
     @State private var snoozeUntilDate: Date = .distantPast
+    @State private var seasonalThemes = ShareTheme.available()
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(AppState.self) var appState
@@ -80,10 +82,10 @@ struct SnoozeAlertsSheetView: View {
                     }.listRowBackground(Color.chart)
                 }
 
-                if let onShareSeasonal {
+                if let onShareSeasonal, !seasonalThemes.isEmpty {
                     Section {
                         Menu {
-                            ForEach(ShareTheme.seasonal, id: \.self) { theme in
+                            ForEach(seasonalThemes, id: \.self) { theme in
                                 Button(theme.menuTitle) { onShareSeasonal(theme) }
                             }
                         } label: {

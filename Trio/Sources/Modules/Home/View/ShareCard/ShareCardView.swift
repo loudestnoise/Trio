@@ -13,6 +13,36 @@ enum ShareTheme: Hashable {
     /// Themes offered in the snooze sheet's "Special" menu, in display order.
     static let seasonal: [ShareTheme] = [.halloween, .thanksgiving, .christmas]
 
+    /// How many days ahead of its holiday a theme shows up in the "Special" menu.
+    static let leadDays = 45
+
+    /// Seasonal themes to offer on `date`: from `leadDays` before the holiday through the holiday
+    /// itself. Once the holiday has passed, its theme stays hidden until `leadDays` before next year's.
+    static func available(on date: Date = Date()) -> [ShareTheme] {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
+        let today = calendar.startOfDay(for: date)
+        return seasonal.filter { theme in
+            guard let holiday = theme.holiday(inYearOf: today, calendar: calendar),
+                  let days = calendar.dateComponents([.day], from: today, to: holiday).day
+            else { return false }
+            return (0 ... leadDays).contains(days)
+        }
+    }
+
+    /// Start of the holiday in the same year as `date`; `nil` for `.standard`. All three fall late in
+    /// the year, so a 45-day lead never reaches back into the previous year.
+    func holiday(inYearOf date: Date, calendar: Calendar) -> Date? {
+        let year = calendar.component(.year, from: date)
+        switch self {
+        case .standard: return nil
+        case .halloween: return calendar.date(from: DateComponents(year: year, month: 10, day: 31))
+        // US Thanksgiving: fourth Thursday of November (Gregorian weekday 5)
+        case .thanksgiving: return calendar.date(from: DateComponents(year: year, month: 11, weekday: 5, weekdayOrdinal: 4))
+        case .christmas: return calendar.date(from: DateComponents(year: year, month: 12, day: 25))
+        }
+    }
+
     var name: String {
         switch self {
         case .standard: return String(localized: "Share")
