@@ -77,12 +77,12 @@ struct ShareCardSnapshot: Identifiable {
     /// Same text the bobble shows: "HIGH" at the 400 mg/dL ceiling, otherwise mg/dL or mmol/L.
     var glucoseText: String {
         if glucoseMgdL == 400 { return "HIGH" }
-        return units == .mgdL ? Decimal(glucoseMgdL).description : Decimal(glucoseMgdL).formattedAsMmolL
+        return Decimal(glucoseMgdL).formatted(for: units)
     }
 
     var eventualText: String? {
         guard let eventualBG else { return nil }
-        return units == .mgdL ? eventualBG.description : eventualBG.formattedAsMmolL
+        return eventualBG.formatted(for: units)
     }
 
     /// The loop determination time is only worth printing when it is not the same minute as the reading.
