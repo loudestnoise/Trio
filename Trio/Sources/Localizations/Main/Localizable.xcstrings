@@ -14372,9 +14372,6 @@
         }
       }
     },
-    "%lld messages" : {
-
-    },
     "%lld min" : {
       "localizations" : {
         "bg" : {
@@ -111738,9 +111735,6 @@
         }
       }
     },
-    "Direction" : {
-
-    },
     "Disable" : {
       "comment" : "Option to disable SMB",
       "localizations" : {
@@ -131273,9 +131267,6 @@
         }
       }
     },
-    "Enforced" : {
-
-    },
     "Enter Meal Preset Name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -134860,9 +134851,6 @@
           }
         }
       }
-    },
-    "Evidence" : {
-
     },
     "Example Calculation" : {
       "localizations" : {
@@ -179256,9 +179244,6 @@
           }
         }
       }
-    },
-    "Last Confirmed" : {
-
     },
     "last device communication %@" : {
       "comment" : "Accessibility: device age",
@@ -237073,9 +237058,6 @@
         }
       }
     },
-    "Planned (Phase %lld)" : {
-
-    },
     "Play preview" : {
       "comment" : "Accessibility: play tone preview",
       "localizations" : {
@@ -249072,9 +249054,6 @@
         }
       }
     },
-    "Readiness" : {
-
-    },
     "Readings" : {
       "comment" : "CGM readings in statView",
       "localizations" : {
@@ -251706,9 +251685,6 @@
       }
     },
     "Reducing insulin some time before the activity, for example with a temp target, usually helps more than changing your profile." : {
-
-    },
-    "Related Guards" : {
 
     },
     "Release Notes" : {
