@@ -13972,16 +13972,6 @@
         }
       }
     },
-    "%lld g treatment, then peak %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld g treatment, then peak %2$@"
-          }
-        }
-      }
-    },
     "%lld h" : {
       "localizations" : {
         "bg" : {
@@ -14785,9 +14775,6 @@
 
     },
     "%lld%% after snacks" : {
-
-    },
-    "%lld%% after treating a low with more than 20 g carbs" : {
 
     },
     "%lld%% around midday" : {
@@ -28934,9 +28921,6 @@
       }
     },
     "A low follows within a few hours of a meal or correction bolus. Often a sign of too much insulin for the carbs or the correction." : {
-
-    },
-    "A low is treated and glucose then overshoots into a high. Usually caused by over-treating the low or by insulin being suspended for too long." : {
 
     },
     "A lower 'Half Basal Target' setting will reduce the basal and raise the ISF earlier, at a lower target glucose." : {
@@ -118882,7 +118866,7 @@
         }
       }
     },
-    "Drop of more than %@ within 1 h, during a raised temp target or a reduced-insulin override, or the hour after it." : {
+    "Drop of more than %@ within 1 h, during a raised temp target or a reduced-insulin override, or the hour after it. Temp targets and overrides set during a low or within 30 min after it are not counted." : {
 
     },
     "Dropped %@ in %lld min" : {
@@ -151241,16 +151225,6 @@
     "Glucose below %@ between 00:00 and 06:00." : {
 
     },
-    "Glucose below %@, then above %@ within 3 h." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Glucose below %1$@, then above %2$@ within 3 h."
-          }
-        }
-      }
-    },
     "Glucose Bobble" : {
       "localizations" : {
         "bg" : {
@@ -166402,9 +166376,6 @@
           }
         }
       }
-    },
-    "If lows themselves are frequent, look at the cause of the lows first. The highs that follow a low are hard to judge on their own." : {
-
     },
     "If shown, Logarithmic Dynamic ISF is enabled." : {
       "localizations" : {
@@ -192061,9 +192032,6 @@
         }
       }
     },
-    "Low treatment" : {
-
-    },
     "LOWALERT!" : {
       "comment" : "LOWALERT!",
       "localizations" : {
@@ -212010,9 +211978,6 @@
           }
         }
       }
-    },
-    "No carbs logged, then peak %@" : {
-
     },
     "No CGM readings found in this time frame, so no scenarios could be detected." : {
 
@@ -249452,9 +249417,6 @@
           }
         }
       }
-    },
-    "Rebound High" : {
-
     },
     "Rec. %" : {
       "localizations" : {
@@ -308816,9 +308778,6 @@
 
     },
     "This pattern usually indicates that fat and protein from larger meals are not covered by the meal bolus." : {
-
-    },
-    "This pattern usually indicates that lows are treated with more carbs than needed, rather than a problem with your settings." : {
 
     },
     "This pattern usually indicates that SMBs alone cannot keep up with these meals, either because the SMB and UAM limits are tight or because insulin only starts once glucose is already rising." : {
