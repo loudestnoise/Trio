@@ -280,7 +280,8 @@ extension SettingsAnalysis {
 
             var pattern = ""
             if !occurrences.isEmpty {
-                let best = (0 ..< 5).max { hourCounts[$0] + hourCounts[$0 + 1] < hourCounts[$1] + hourCounts[$1 + 1] } ?? 0
+                let pairCount: (Int) -> Int = { hourCounts[$0] + hourCounts[$0 + 1] }
+                let best = (0 ..< 5).max { pairCount($0) < pairCount($1) } ?? 0
                 let pct = percent(hourCounts[best] + hourCounts[best + 1], of: occurrences.count)
                 pattern = String(localized: "\(pct)% between \(clock(best)) and \(clock(best + 2))")
             }
